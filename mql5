@@ -1,0 +1,108 @@
+
+//+------------------------------------------------------------------+
+//|                                                   Order Block Scanner |
+//|                                                           forexroboteasy.com |
+//|                                                              Forex Robot Easy Team |
+//+------------------------------------------------------------------+
+#property copyright 'forexroboteasy.com'
+#property link      'forexroboteasy.com'
+#property version   '1.00'
+#property strict
+
+//+------------------------------------------------------------------+
+//| Global variables                                                  |
+//+------------------------------------------------------------------+
+int g_symbolCount = SymbolsTotal();
+datetime g_startTime;
+datetime g_endTime;
+bool g_scanning = false;
+
+//+------------------------------------------------------------------+
+//| Custom indicator initialization function                         |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+    // Initialize variables
+    g_startTime = iTime(NULL, PERIOD_M1, 0);
+    g_endTime = iTime(NULL, PERIOD_M1, Bars - 1);
+    
+    return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Custom indicator iteration function                              |
+//+------------------------------------------------------------------+
+void OnCalculate(const int rates_total,
+                 const int prev_calculated,
+                 const datetime &time[],
+                 const double &open[],
+                 const double &high[],
+                 const double &low[],
+                 const double &close[],
+                 const long &tick_volume[],
+                 const long &volume[],
+                 const int &spread[])
+{
+    // Check if scanning is enabled
+    if (g_scanning)
+    {
+        // Perform market analysis for each symbol and time frame
+        for (int symbol = 0; symbol < g_symbolCount; symbol++)
+        {
+            string symbolName = SymbolName(symbol, true);
+            
+            for (int timeframe = 0; timeframe < PERIOD_CURRENT; timeframe++)
+            {
+                datetime startTime = iTime(symbolName, timeframe, 0);
+                datetime endTime = iTime(symbolName, timeframe, Bars - 1);
+                
+                // Perform analysis
+                // ...
+                // ...
+                // ...
+                
+                // Print analysis results
+                Print('Symbol: ', symbolName, ', Timeframe: ', PeriodToString(timeframe), ', Analysis Results: ...');
+            }
+        }
+        
+        // Scanning completed
+        g_scanning = false;
+    }
+}
+
+//+------------------------------------------------------------------+
+//| Start scanning all symbols and time frames                        |
+//+------------------------------------------------------------------+
+void StartScanning()
+{
+    // Set scanning flag to true
+    g_scanning = true;
+    
+    // Print scanning started message
+    Print('Scanning started...');
+    
+    // Perform market analysis
+    OnCalculate(0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    
+    // Print scanning completed message
+    Print('Scanning completed.');
+}
+
+//+------------------------------------------------------------------+
+//| Script program start function                                     |
+//+------------------------------------------------------------------+
+void OnStart()
+{
+    // Start scanning all symbols and time frames
+    StartScanning();
+    
+    // Wait for scanning to complete
+    while (g_scanning)
+    {
+        Sleep(100);
+    }
+    
+    // Print program completed message
+    Print('Program completed.');
+}
